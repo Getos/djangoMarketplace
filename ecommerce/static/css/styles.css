@@ -10824,3 +10824,24 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+.navbar .user-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar .status-indicator {
+  width: 10px;
+  height: 10px;
+  background-color: green;
+  border-radius: 50%;
+}
+.status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: green;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
