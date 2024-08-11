@@ -1,3 +1,3 @@
-import django.dispatch
+# import django.dispatch
 
-Order_confirmation_email = django.dispatch.Signal()
+# Order_confirmation_email = django.dispatch.Signal()

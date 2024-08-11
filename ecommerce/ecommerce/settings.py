@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'products',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -83,7 +85,7 @@ database_password = os.getenv('DATABASE_PASSWORD')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pythonDB1',
+        'NAME': 'ecommercedjangodb',
         'USER': 'root',
         'PASSWORD': database_password,
         'HOST': 'localhost',
