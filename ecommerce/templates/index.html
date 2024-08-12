@@ -79,23 +79,30 @@
                     <div class="col mb-5">
                         <div class="card h-100">
                             <!-- Product image-->
-                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                            <img class="card-img-top" src={{ product.imageUrl }} alt="..." />
                             <!-- Product details-->
                             <div class="card-body p-4">
                                 <div class="text-center">
-                                    <!-- Product pk-->
-                                    <h6 class="fw-bolder">ID: {{ product.pk }}</h6>
                                     <!-- Product title-->
                                     <h5 class="fw-bolder">{{ product.title }}</h5>
                                     <!-- Product content-->
                                     <p>{{ product.content }}</p>
                                     <!-- Product price-->
                                     <span>${{ product.price }}</span>
+                                    <!-- Product actions -->
+                                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                        <div class="text-center">
+                                            <!-- Quantity input -->
+                                            <div class="input-group mb-3" style="max-width: 120px; margin: 0 auto;">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity(this)">-</button>
+                                                <input type="text" class="form-control text-center" value="0" min="0" max="100" readonly>
+                                                <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(this)">+</button>
+                                            </div>
+                                            <!-- Add to cart button -->
+                                            <a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
                             </div>
                         </div>
                     </div>
