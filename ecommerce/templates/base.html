@@ -52,18 +52,32 @@
                         </li>
                         {% endif %}
                     </ul>
-                    
-                    <form class="d-flex">
-                        <button class="btn btn-outline-dark" type="submit">
-                            <i class="bi-cart-fill me-1"></i>
-                            Cart
-                            <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                        </button>
-                    </form>
+                    {% comment %} <a href="{% url 'cart' %}" style="color:white; text-decoration:none">
+                        <div class="cart-container">
+                           <div class="cartitems"><p id="num_of_items">{{cart.num_of_items}}</p></div>
+                           <i class="fa-solid fa-cart-shopping"></i>
+                       </div>
+                   </a> {% endcomment %}
+                   <a href="{% url 'cart' %}" class="btn btn-outline-secondary">
+                    <i class="bi-cart-fill me-1"></i>
+                    Cart
+                    <span class="badge bg-dark text-white ms-1 rounded-pill" id="num_of_items">{{ num_of_items }}</span>
+                </a>
                 </div>
             </div>
         </nav>
+        {% if messages %}
+
+        {% for message in messages %}
+    
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+           {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
         
+        {% endfor %}
+            
+        {% endif %}
   
         <!-- Header-->
         <header class="bg-dark py-5">
