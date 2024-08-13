@@ -1,9 +1,10 @@
 
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from products.models import Product
 import json
 from users.models import Cart, CartItem
+from django.contrib import messages
 
 
 def homepage(request):
@@ -67,3 +68,12 @@ def add_to_cart(request):
         return JsonResponse({"num_of_items": num_of_items}, status=200)
     else:
         return JsonResponse({"error": "User not authenticated"}, status=401)
+
+
+def confirm_payment(request, pk):
+    cart = Cart.objects.get(id=pk)
+    cart.completed = True
+    cart.save()
+    messages.success(
+        request, f"payment made successfully reference number : {pk}")
+    return redirect("home")
