@@ -13,8 +13,8 @@
     {% for item in items %}
     <div class="row py-3 border-bottom">
         <div class="col-md-4 d-flex align-items-center">
-            <img src="{{item.product.picture.url}}" alt="{{item.product.name}}" class="img-fluid" style="max-width: 80px; margin-right: 10px;">
-            <p class="mb-0">{{ item.product.name }}</p>
+            {% comment %} <img src="{{item.product.imageUrl.url}}" alt="{{item.product.name}}" class="img-fluid" style="max-width: 80px; margin-right: 10px;"> {% endcomment %}
+            <p class="mb-0">{{ item.product.title }}</p>
         </div>
         <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
             <p class="mb-0">{{ item.quantity }}</p>
