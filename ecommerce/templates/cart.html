@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">My Cart</h2>
+
+    <div class="row bg-light p-2 font-weight-bold">
+        <div class="col-md-4">Product's Name</div>
+        <div class="col-md-2 text-center">Quantity</div>
+        <div class="col-md-3 text-center">Unit Price</div>
+        <div class="col-md-3 text-center">Total Price</div>
+    </div>
+
+    {% for item in items %}
+    <div class="row py-3 border-bottom">
+        <div class="col-md-4 d-flex align-items-center">
+            {% comment %} <img src="{{item.product.imageUrl.url}}" alt="{{item.product.name}}" class="img-fluid" style="max-width: 80px; margin-right: 10px;"> {% endcomment %}
+            <p class="mb-0">{{ item.product.title }}</p>
+        </div>
+        <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
+            <p class="mb-0">{{ item.quantity }}</p>
+        </div>
+        <div class="col-md-3 text-center d-flex align-items-center justify-content-center">
+            <p class="mb-0">${{ item.product.price }}</p>
+        </div>
+        <div class="col-md-3 text-center d-flex align-items-center justify-content-center">
+            <p class="mb-0">${{ item.itemTotal }}</p>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="row mt-4">
+        <div class="col-md-12 text-right">
+            <h3>Grand Total: ${{ cart.total_price }}</h3>
+            <button class="btn btn-primary mt-3" onclick="makePayment()" id="payButton">Pay</button>
+        </div>
+    </div>
+</div>
+<script>
+  document.getElementById("payButton").onclick = function () {
+    let cart_total = "{{cart.total_price}}"
+    let cart_id ="{{cart.id}}"
+    location.href = "http://localhost:8000/confirm_payment/"+cart_id;
+};
+</script>
+{% endblock content %}
