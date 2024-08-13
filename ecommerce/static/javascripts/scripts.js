@@ -47,6 +47,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // Function to add product to cart
 export function addToCart(e) {
     const button = e.target;
+    const isLoggedIn = document.getElementById('is_logged_in').value === 'True';
+
+    if (!isLoggedIn) {
+        alert('You need to be logged in.');
+        return;
+    }
     console.log("inside addToCart")
 
     const productId = button.getAttribute('data-product-id');
