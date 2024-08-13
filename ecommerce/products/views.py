@@ -1,6 +1,7 @@
 from rest_framework import authentication, generics, permissions
 from .models import Product
 from .seralizers import ProductSerializer
+from .models import Product
 
 
 class ProductListCreateAPIView(

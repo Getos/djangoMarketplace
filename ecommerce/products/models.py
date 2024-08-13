@@ -9,6 +9,8 @@ class Product(models.Model):
     content = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=15, decimal_places=2)
     quantity = models.IntegerField()
+    imageUrl = models.URLField(
+        default='https://upload.wikimedia.org/wikipedia/commons/2/2f/Blue_vacuum_cleaner.svg')
 
     @property
     def sale_price(self):

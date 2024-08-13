@@ -1,0 +1,13 @@
+
+
+{% block content %}
+<div class="rightSide">
+    <a href="{% url 'home' %}" class="btnRegister">Back Home</a>
+</div>
+  <h2>Login</h2>
+  <form method="post" action="{% url 'users:login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+</form>
+{% endblock %}
