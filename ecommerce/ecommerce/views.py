@@ -30,6 +30,7 @@ def cartcount(request):
 def cart(request):
     cart = None
     cartitems = []
+    insufficient_stock_items = []
     # Use cartcount to get the number of items
     num_of_items = cartcount(request)
 
@@ -38,12 +39,36 @@ def cart(request):
             user=request.user, completed=False)
         cartitems = cart.cartitems.all()
 
+        # Check for items with insufficient stock
+        for item in cartitems:
+            if item.quantity > item.product.quantity:
+                insufficient_stock_items.append(item.product.id)
+
     context = {
         "cart": cart,
         "items": cartitems,
-        "num_of_items": num_of_items
+        "num_of_items": num_of_items,
+        "insufficient_stock_items": insufficient_stock_items  # Pass this to template
     }
     return render(request, "cart.html", context)
+
+# def cart(request):
+#     cart = None
+#     cartitems = []
+#     # Use cartcount to get the number of items
+#     num_of_items = cartcount(request)
+
+#     if request.user.is_authenticated:
+#         cart, created = Cart.objects.get_or_create(
+#             user=request.user, completed=False)
+#         cartitems = cart.cartitems.all()
+
+#     context = {
+#         "cart": cart,
+#         "items": cartitems,
+#         "num_of_items": num_of_items
+#     }
+#     return render(request, "cart.html", context)
 
 
 def add_to_cart(request):
