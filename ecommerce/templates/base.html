@@ -52,13 +52,16 @@
                             </ul>
                         </li>
                         {% endif %}
+                        {% if user.is_authenticated and user.is_staff %}
+
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'product-portal' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn btn-link nav-link" type="submit">Product portal</button>
+                            </form>
+                        </li>  
+                        {% endif %}
                     </ul>
-                    {% comment %} <a href="{% url 'cart' %}" style="color:white; text-decoration:none">
-                        <div class="cart-container">
-                           <div class="cartitems"><p id="num_of_items">{{cart.num_of_items}}</p></div>
-                           <i class="fa-solid fa-cart-shopping"></i>
-                       </div>
-                   </a> {% endcomment %}
                    <a href="{% url 'cart' %}" class="btn btn-outline-secondary">
                     <i class="bi-cart-fill me-1"></i>
                     Cart

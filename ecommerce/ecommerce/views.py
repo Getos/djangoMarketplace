@@ -8,6 +8,9 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from users.models import CartItem
+from django.db import transaction
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import render
 
 
 def homepage(request):
@@ -99,6 +102,7 @@ def add_to_cart(request):
         return JsonResponse({"error": "User not authenticated"}, status=401)
 
 
+@transaction.atomic
 def confirm_payment(request, pk):
     cart = Cart.objects.get(id=pk)
     cartitems = cart.cartitems.all()
@@ -129,7 +133,7 @@ def confirm_payment(request, pk):
 
     cart.save()
     messages.success(
-        request, f"Payment made successfully. Reference number: {pk}")
+        request, f"Payment made successfully. Cart reference number: {pk}")
     return redirect("home")
 
 
@@ -141,3 +145,16 @@ def delete_cart_item(request, pk):
         return JsonResponse({"success": True}, status=200)
     except CartItem.DoesNotExist:
         return JsonResponse({"error": "CartItem not found"}, status=404)
+
+# Test function to check if the user is staff or admin
+
+
+def staff_or_admin_check(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
+
+# Use the decorator to restrict access to staff or admin users
+
+
+@user_passes_test(staff_or_admin_check, login_url='/login/')
+def product_portal(request):
+    return render(request, 'product_portal.html')

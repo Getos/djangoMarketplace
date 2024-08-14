@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Product Management Portal</h2>
+
+    <!-- Add Product Form -->
+    <div class="card mb-5">
+        <div class="card-header">
+            <h4>Add New Product</h4>
+        </div>
+        <div class="card-body">
+            <form id="addProductForm">
+                <div class="form-group">
+                    <label for="title">Product Title</label>
+                    <input type="text" class="form-control" id="title" placeholder="Enter product title" required>
+                </div>
+                <div class="form-group">
+                    <label for="content">Product Description</label>
+                    <textarea class="form-control" id="content" placeholder="Enter product description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="number" class="form-control" id="price" placeholder="Enter product price" required>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity</label>
+                    <input type="number" class="form-control" id="quantity" placeholder="Enter product quantity" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Product</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product List -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Existing Products</h4>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="productTable">
+                    <!-- Products will be populated here via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('addProductForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        const price = document.getElementById('price').value;
+        const quantity = document.getElementById('quantity').value;
+
+        fetch('/your-product-create-url/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                title: title,
+                content: content,
+                price: price,
+                quantity: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Product added successfully!');
+            location.reload();  // Refresh the page to show the new product
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // You can also fetch products and populate the table dynamically
+    // This part is for listing and delete/update actions.
+</script>
+{% endblock %}

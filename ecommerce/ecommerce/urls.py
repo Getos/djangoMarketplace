@@ -30,4 +30,5 @@ urlpatterns = [
     path("confirm_payment/<str:pk>", views.confirm_payment),
     path('delete_cart_item/<int:pk>/',
          views.delete_cart_item, name='delete_cart_item'),
+    path('product-portal/', views.product_portal, name='product-portal'),
 ]
