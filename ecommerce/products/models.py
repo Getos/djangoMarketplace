@@ -17,7 +17,7 @@ class Product(models.Model):
         return "%.2f" % (float(self.price) * 0.8)
 
     def __str__(self):
-        return self.title
+        return f"{self.title} (Quantity: {self.quantity})"
 
 
 # def emailConfig(sender, instance, created, *args, **kwargs):

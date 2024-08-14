@@ -3,6 +3,13 @@
 <div class="container mt-5">
     <h2 class="mb-4">My Cart</h2>
 
+    <!-- Error message for insufficient stock -->
+    {% if insufficient_stock_items %}
+    <div class="alert alert-danger">
+        Some items in your cart exceed the available stock. Please update your cart before proceeding to payment.
+    </div>
+    {% endif %}
+
     <div class="row bg-light p-2 font-weight-bold">
         <div class="col-md-4">Product's Name</div>
         <div class="col-md-2 text-center">Quantity</div>
@@ -11,13 +18,15 @@
     </div>
 
     {% for item in items %}
-    <div class="row py-3 border-bottom">
+    <div class="row py-3 border-bottom {% if item.product.id in insufficient_stock_items %} text-danger {% endif %}">
         <div class="col-md-4 d-flex align-items-center">
-            {% comment %} <img src="{{item.product.imageUrl.url}}" alt="{{item.product.name}}" class="img-fluid" style="max-width: 80px; margin-right: 10px;"> {% endcomment %}
             <p class="mb-0">{{ item.product.title }}</p>
         </div>
         <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
             <p class="mb-0">{{ item.quantity }}</p>
+            {% if item.quantity > item.product.quantity %}
+                <span class="text-danger ml-2">(the quantity{{ item.quantity }} is not available)</span>
+            {% endif %}
         </div>
         <div class="col-md-3 text-center d-flex align-items-center justify-content-center">
             <p class="mb-0">${{ item.product.price }}</p>
@@ -31,15 +40,15 @@
     <div class="row mt-4">
         <div class="col-md-12 text-right">
             <h3>Grand Total: ${{ cart.total_price }}</h3>
-            <button class="btn btn-primary mt-3" onclick="makePayment()" id="payButton">Pay</button>
+            <button class="btn btn-primary mt-3" id="payButton" {% if insufficient_stock_items %} disabled {% endif %}>Pay</button>
         </div>
     </div>
 </div>
+
 <script>
   document.getElementById("payButton").onclick = function () {
-    let cart_total = "{{cart.total_price}}"
-    let cart_id ="{{cart.id}}"
-    location.href = "http://localhost:8000/confirm_payment/"+cart_id;
-};
+    let cart_id = "{{cart.id}}";
+    location.href = "http://localhost:8000/confirm_payment/" + cart_id;
+  };
 </script>
 {% endblock content %}
