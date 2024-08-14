@@ -5,6 +5,9 @@ from products.models import Product
 import json
 from users.models import Cart, CartItem
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from users.models import CartItem
 
 
 def homepage(request):
@@ -106,14 +109,35 @@ def confirm_payment(request, pk):
             insufficient_stock_items.append(cartitem.product.title)
 
     if insufficient_stock_items:
-        # If there are items with insufficient stock, show an error
         messages.error(request, f"Cannot proceed with payment. The following items exceed available stock: {
                        ', '.join(insufficient_stock_items)}")
         return redirect("cart")
 
-    # If all items are within stock, proceed with payment
+    if not cartitems:
+        messages.error(
+            request, "Cannot proceed with payment. No items in cart")
+        return redirect("cart")
+
+    # Mark the cart as completed
     cart.completed = True
+
+    # Update product quantities
+    for cartitem in cartitems:
+        new_quantity = cartitem.product.quantity - cartitem.quantity
+        cartitem.product.quantity = new_quantity
+        cartitem.product.save()
+
     cart.save()
     messages.success(
         request, f"Payment made successfully. Reference number: {pk}")
     return redirect("home")
+
+
+@require_http_methods(["DELETE"])
+def delete_cart_item(request, pk):
+    try:
+        cart_item = CartItem.objects.get(id=pk)
+        cart_item.delete()
+        return JsonResponse({"success": True}, status=200)
+    except CartItem.DoesNotExist:
+        return JsonResponse({"error": "CartItem not found"}, status=404)

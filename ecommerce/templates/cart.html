@@ -11,28 +11,34 @@
     {% endif %}
 
     <div class="row bg-light p-2 font-weight-bold">
-        <div class="col-md-4">Product's Name</div>
+        <div class="col-md-3">Product's Name</div>
         <div class="col-md-2 text-center">Quantity</div>
-        <div class="col-md-3 text-center">Unit Price</div>
+        <div class="col-md-2 text-center">Unit Price</div>
         <div class="col-md-3 text-center">Total Price</div>
+        <div class="col-md-2 text-center">Delete</div>
     </div>
 
     {% for item in items %}
     <div class="row py-3 border-bottom {% if item.product.id in insufficient_stock_items %} text-danger {% endif %}">
-        <div class="col-md-4 d-flex align-items-center">
+        <div class="col-md-3 d-flex align-items-center">
             <p class="mb-0">{{ item.product.title }}</p>
         </div>
         <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
             <p class="mb-0">{{ item.quantity }}</p>
             {% if item.quantity > item.product.quantity %}
-                <span class="text-danger ml-2">(the quantity{{ item.quantity }} is not available)</span>
+            <span class="text-danger ml-2">(the quantity{{ item.quantity }} is not available)</span>
             {% endif %}
         </div>
-        <div class="col-md-3 text-center d-flex align-items-center justify-content-center">
+        <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
             <p class="mb-0">${{ item.product.price }}</p>
         </div>
         <div class="col-md-3 text-center d-flex align-items-center justify-content-center">
             <p class="mb-0">${{ item.itemTotal }}</p>
+        </div>
+        <div class="col-md-2 text-center">
+            <button class="btn btn-light" onclick="deleteCartItem({{ item.id }})">
+                <i class="fas fa-trash-alt"></i> 
+            </button>
         </div>
     </div>
     {% endfor %}
@@ -47,8 +53,21 @@
 
 <script>
   document.getElementById("payButton").onclick = function () {
-    let cart_id = "{{cart.id}}";
+    let cart_id = "{{ cart.id }}";
     location.href = "http://localhost:8000/confirm_payment/" + cart_id;
   };
+
+  function deleteCartItem(cartItemId) {
+    fetch(`/delete_cart_item/${cartItemId}/`, {
+      method: "DELETE",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}"
+      }
+    }).then(response => {
+      if (response.status === 200) {
+        location.reload();
+      }
+    });
+  }
 </script>
 {% endblock content %}

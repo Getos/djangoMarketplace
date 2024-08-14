@@ -27,5 +27,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path("cart/", views.cart, name="cart"),
     path("add_to_cart/", views.add_to_cart, name="add"),
-    path("confirm_payment/<str:pk>", views.confirm_payment)
+    path("confirm_payment/<str:pk>", views.confirm_payment),
+    path('delete_cart_item/<int:pk>/',
+         views.delete_cart_item, name='delete_cart_item'),
 ]
