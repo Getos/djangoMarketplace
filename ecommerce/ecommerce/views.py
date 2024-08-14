@@ -52,24 +52,6 @@ def cart(request):
     }
     return render(request, "cart.html", context)
 
-# def cart(request):
-#     cart = None
-#     cartitems = []
-#     # Use cartcount to get the number of items
-#     num_of_items = cartcount(request)
-
-#     if request.user.is_authenticated:
-#         cart, created = Cart.objects.get_or_create(
-#             user=request.user, completed=False)
-#         cartitems = cart.cartitems.all()
-
-#     context = {
-#         "cart": cart,
-#         "items": cartitems,
-#         "num_of_items": num_of_items
-#     }
-#     return render(request, "cart.html", context)
-
 
 def add_to_cart(request):
     data = json.loads(request.body)
@@ -114,19 +96,11 @@ def add_to_cart(request):
         return JsonResponse({"error": "User not authenticated"}, status=401)
 
 
-# def confirm_payment(request, pk):
-#     cart = Cart.objects.get(id=pk)
-#     cart.completed = True
-#     cart.save()
-#     messages.success(
-#         request, f"payment made successfully reference number : {pk}")
-#     return redirect("home")
 def confirm_payment(request, pk):
     cart = Cart.objects.get(id=pk)
     cartitems = cart.cartitems.all()
     insufficient_stock_items = []
 
-    # Check each cart item's quantity against the available product stock
     for cartitem in cartitems:
         if cartitem.quantity > cartitem.product.quantity:
             insufficient_stock_items.append(cartitem.product.title)

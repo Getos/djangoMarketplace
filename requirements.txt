@@ -1,6 +1,0 @@
-Django
-celery
-redis
-djangorestframework
-python-dotenv
-mysqlclient
