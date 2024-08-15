@@ -157,4 +157,8 @@ def staff_or_admin_check(user):
 
 @user_passes_test(staff_or_admin_check, login_url='/login/')
 def product_portal(request):
-    return render(request, 'product_portal.html')
+    products = Product.objects.all()
+    context = {
+        'products': products
+    }
+    return render(request, 'product_portal.html', context)

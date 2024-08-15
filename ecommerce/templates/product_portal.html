@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 <div class="container mt-5">
     <h2>Product Management Portal</h2>
 
-    <!-- Add Product Form -->
+    <!-- Add/Update Product Form -->
     <div class="card mb-5">
         <div class="card-header">
-            <h4>Add New Product</h4>
+            <h4 id="formHeader">Add New Product</h4> <!-- Dynamically change header based on action -->
         </div>
         <div class="card-body">
             <form id="addProductForm">
+                <input type="hidden" id="productId">  <!-- Hidden input to store product ID for editing -->
+
                 <div class="form-group">
                     <label for="title">Product Title</label>
                     <input type="text" class="form-control" id="title" placeholder="Enter product title" required>
@@ -26,65 +29,83 @@
                     <label for="quantity">Quantity</label>
                     <input type="number" class="form-control" id="quantity" placeholder="Enter product quantity" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Add Product</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Add Product</button>
             </form>
         </div>
     </div>
 
-    <!-- Product List -->
-    <div class="card">
-        <div class="card-header">
-            <h4>Existing Products</h4>
-        </div>
-        <div class="card-body">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Content</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="productTable">
-                    <!-- Products will be populated here via JS -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+   
+<table id="productTable" class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>id</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.title }}</td>
+            <td>{{ product.content }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.quantity }}</td>
+            <td>{{ product.id }}</td>
+            <td>
+                <button class="btn btn-sm btn-warning edit-btn" data-id="{{ product.id }}">Edit</button>
+                <button class="btn btn-sm btn-danger delete-btn" data-id="{{ product.id }}">Delete</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script type="module">
+    import { fetchProducts, deleteProduct, editProduct, updateProduct } from '{% static "javascripts/product.js" %}';
 
-<script>
-    document.getElementById('addProductForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const title = document.getElementById('title').value;
-        const content = document.getElementById('content').value;
-        const price = document.getElementById('price').value;
-        const quantity = document.getElementById('quantity').value;
-
-        fetch('/your-product-create-url/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                title: title,
-                content: content,
-                price: price,
-                quantity: quantity
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert('Product added successfully!');
-            location.reload();  // Refresh the page to show the new product
-        })
-        .catch(error => console.error('Error:', error));
+    // Fetch products on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchProducts();
     });
 
-    // You can also fetch products and populate the table dynamically
-    // This part is for listing and delete/update actions.
+    // Add/Update product form submission
+    document.getElementById('addProductForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const productId = document.getElementById('productId').value;
+
+        if (productId) {
+            // If productId exists, it's an update
+            updateProduct(productId);
+        } else {
+            // Otherwise, it's a new product addition
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const price = document.getElementById('price').value;
+            const quantity = document.getElementById('quantity').value;
+
+            fetch('/api/products/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    title: title,
+                    content: content,
+                    price: price,
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Product added successfully!');
+                fetchProducts();  // Refresh product list
+                resetForm();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
 </script>
 {% endblock %}
