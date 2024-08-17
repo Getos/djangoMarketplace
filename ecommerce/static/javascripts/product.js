@@ -1,18 +1,5 @@
 // product.js
 
-// Fetch and display products
-export async function fetchProducts() {
-    try {
-        const response = await fetch('/api/products/');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        populateProductTable(data);
-    } catch (error) {
-        console.error('Error fetching products:', error);
-    }
-}
 
 // Populate product table
 function populateProductTable(products) {
@@ -26,12 +13,14 @@ function populateProductTable(products) {
                 <td>${product.price}</td>
                 <td>${product.quantity}</td>
                 <td>
-                    <button class="btn btn-sm btn-warning edit-btn" data-id="${product.id}">Edit</button>
-                    <button class="btn btn-sm btn-danger delete-btn" data-id="${product.id}">Delete</button>
+                    <button class="btn btn-sm btn-warning edit-btn" data-id="${product.pk}">Edit</button>
+                    <button class="btn btn-sm btn-danger delete-btn" data-id="${product.pk}">Delete</button>
                 </td>
             </tr>
         `;
         productTable.innerHTML += row;
+        console.log(product.pk)
+        
     });
 
     // Attach event listeners after populating the table
@@ -43,6 +32,7 @@ function attachEventListeners() {
     document.querySelectorAll('.edit-btn').forEach(button => {
         button.addEventListener('click', () => {
             const productId = button.getAttribute('data-id');
+            console.log('this is inside getAttribute'+productId)
             if (productId) {
                 editProduct(productId);
             } else {
@@ -64,9 +54,14 @@ function attachEventListeners() {
 }
 
 // Edit product
-export async function editProduct(id) {
+export async function editProduct(productId) {
     try {
-        const response = await fetch(`/api/products/${id}/`);
+        const response = await fetch(`/api/products/${productId}/`, {
+            headers: {
+                'Authorization': `Token ${getToken()}`
+            }
+        });
+        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -77,26 +72,57 @@ export async function editProduct(id) {
         document.getElementById('content').value = product.content;
         document.getElementById('price').value = product.price;
         document.getElementById('quantity').value = product.quantity;
-        document.getElementById('productId').value = product.id;  // Hidden field to track product ID
+        document.getElementById('productId').value = product.pk;  // Hidden field to track product ID
         document.getElementById('submitBtn').innerText = 'Update Product';  // Change button text
     } catch (error) {
         console.error('Error editing product:', error);
     }
 }
 
+function getToken() {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'authToken') {
+            return value;
+        }
+    }
+    return null;  // Return null if no token is found
+}
+
+// Fetch and display products
+export async function fetchProducts() {
+    try {
+        const token = getToken();  // Get token from cookie
+        const response = await fetch('/api/products/', {
+            headers: {
+                'Authorization': `Token ${token}`  // Pass token in Authorization header
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        populateProductTable(data);
+    } catch (error) {
+        console.error('Error fetching products:', error);
+    }
+}
+
 // Update product
-export async function updateProduct(id) {
+export async function updateProduct(productId) {
     const title = document.getElementById('title').value;
     const content = document.getElementById('content').value;
     const price = document.getElementById('price').value;
     const quantity = document.getElementById('quantity').value;
+    const token = getToken();  // Get token from cookie
 
     try {
-        const response = await fetch(`/api/products/${id}/update/`, {
+        const response = await fetch(`/api/products/${productId}/update/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}',
+                'Authorization': `Token ${token}`,  // Pass token in Authorization header
             },
             body: JSON.stringify({
                 title: title,
@@ -119,13 +145,15 @@ export async function updateProduct(id) {
 }
 
 // Delete product
-export async function deleteProduct(id) {
+export async function deleteProduct(productId) {
+    const token = getToken();  // Get token from cookie
+
     if (confirm('Are you sure you want to delete this product?')) {
         try {
-            const response = await fetch(`/api/products/${id}/delete/`, {
+            const response = await fetch(`/api/products/${productId}/delete/`, {
                 method: 'DELETE',
                 headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Authorization': `Token ${token}`,  // Pass token in Authorization header
                 },
             });
 
@@ -140,7 +168,6 @@ export async function deleteProduct(id) {
         }
     }
 }
-
 // Reset the form after update
 function resetForm() {
     document.getElementById('addProductForm').reset();

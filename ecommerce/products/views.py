@@ -2,17 +2,15 @@ from rest_framework import authentication, generics, permissions
 from .models import Product
 from .seralizers import ProductSerializer
 from .models import Product
-from django.contrib.admin.views.decorators import staff_member_required
-from .permissions import IsStaffUser
+from .permissions import IsStaffOrAdmin
 
 
 class ProductListCreateAPIView(
         generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [authentication.SessionAuthentication,
-                              authentication.TokenAuthentication]
-    permission_classes = [IsStaffUser]
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [IsStaffOrAdmin]
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
@@ -29,8 +27,7 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     # lookup_field = 'pk'
-    authentication_classes = [authentication.SessionAuthentication,
-                              authentication.TokenAuthentication]
+    authentication_classes = [authentication.TokenAuthentication]
 
 
 product_detail_view = ProductDetailAPIView.as_view()
@@ -40,9 +37,8 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
-    authentication_classes = [authentication.SessionAuthentication,
-                              authentication.TokenAuthentication]
-    permission_classes = [IsStaffUser]
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [IsStaffOrAdmin]
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -57,9 +53,8 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
-    authentication_classes = [authentication.SessionAuthentication,
-                              authentication.TokenAuthentication]
-    permission_classes = permissions.IsAdminUser
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
 
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)

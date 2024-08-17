@@ -53,10 +53,10 @@
             <td>{{ product.content }}</td>
             <td>{{ product.price }}</td>
             <td>{{ product.quantity }}</td>
-            <td>{{ product.id }}</td>
+            <td>{{ product.pk }}</td>
             <td>
-                <button class="btn btn-sm btn-warning edit-btn" data-id="{{ product.id }}">Edit</button>
-                <button class="btn btn-sm btn-danger delete-btn" data-id="{{ product.id }}">Delete</button>
+                <button class="btn btn-sm btn-warning edit-btn" data-id="{{ product.pk }}">Edit</button>
+                <button class="btn btn-sm btn-danger delete-btn" data-id="{{ product.pk }}">Delete</button>
             </td>
         </tr>
         {% endfor %}
@@ -67,7 +67,7 @@
 
     // Fetch products on page load
     document.addEventListener('DOMContentLoaded', () => {
-        fetchProducts();
+        fetchProducts();  // Ensure products are fetched with the token
     });
 
     // Add/Update product form submission
@@ -84,12 +84,13 @@
             const content = document.getElementById('content').value;
             const price = document.getElementById('price').value;
             const quantity = document.getElementById('quantity').value;
+            const token = getToken();  // Get token from cookie
 
             fetch('/api/products/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
+                    'Authorization': `Token ${token}`  // Pass token in Authorization header
                 },
                 body: JSON.stringify({
                     title: title,
