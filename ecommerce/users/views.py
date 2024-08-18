@@ -10,6 +10,7 @@ from django.views.generic import CreateView
 from .forms import CustomUserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView as BaseLoginView
+from ecommerce.tasks import send_welcome_email
 
 
 class RegisterView(CreateView):
@@ -22,17 +23,8 @@ class RegisterView(CreateView):
         # Send welcome email after user registration
         user_email = form.cleaned_data.get('email')
         print(f"this is the user email {user_email}")
-        self.send_welcome_email(user_email)
+        send_welcome_email.delay(user_email)
         return response
-
-    def send_welcome_email(self, user_email):
-        print("inside send mail")
-        subject = 'Welcome to Our Website'
-        message = 'Thank you for registering with us. We are excited to have you!'
-        # email_from = settings.DEFAULT_FROM_EMAIL  # or 'no-reply@yourdomain.com'
-        email_from = 'testwelcom@elmassalla.com'  # or 'no-reply@yourdomain.com'
-        recipient_list = [user_email]
-        send_mail(subject, message, email_from, recipient_list)
 
 
 class CustomLoginView(BaseLoginView):
