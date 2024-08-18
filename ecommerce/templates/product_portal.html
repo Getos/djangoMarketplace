@@ -63,7 +63,7 @@
     </tbody>
 </table>
 <script type="module">
-    import { fetchProducts, deleteProduct, editProduct, updateProduct } from '{% static "javascripts/product.js" %}';
+    import { fetchProducts, deleteProduct, editProduct, updateProduct, getToken, resetForm } from '{% static "javascripts/product.js" %}';
 
     // Fetch products on page load
     document.addEventListener('DOMContentLoaded', () => {
@@ -84,7 +84,7 @@
             const content = document.getElementById('content').value;
             const price = document.getElementById('price').value;
             const quantity = document.getElementById('quantity').value;
-            const token = getToken();  // Get token from cookie
+            const token = getToken();
 
             fetch('/api/products/', {
                 method: 'POST',

@@ -2,7 +2,9 @@ from rest_framework import authentication, generics, permissions
 from .models import Product
 from .seralizers import ProductSerializer
 from .models import Product
-from .permissions import IsStaffOrAdmin
+from .permissions import IsStaffOrAdmin, IsAdminUser
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 
 
 class ProductListCreateAPIView(
@@ -44,6 +46,15 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
         instance = serializer.save()
         if not instance.content:
             instance.content = instance.title
+  # Debug output
+        user = self.request.user
+        print(f'Update User: {user.username}')
+        print(f'Is Staff: {user.is_staff}')
+        print(f'Is Admin: {user.is_superuser}')
+        permissions = user.user_permissions.all()
+        print('User Permissions:')
+        for perm in permissions:
+            print(perm.name)
 
 
 product_update_view = ProductUpdateAPIView.as_view()
@@ -54,9 +65,23 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
     serializer_class = ProductSerializer
     lookup_field = 'pk'
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def perform_destroy(self, instance):
+        # You can access the user and print permissions here
+        user = self.request.user
+        permissions = user.user_permissions.all()
+        print(f'User: {user.username}')
+        print(f'Is Admin: {user.is_superuser}')
+        print(f'Is Staff: {user.is_staff}')
+        print('User Permissions:')
+        for perm in permissions:
+            print(perm.name)
+        # # Check if user has admin permissions here
+        # if not user.is_superuser:
+        #     raise PermissionDenied(
+        #         "You do not have permission to perform this action.")
+
         return super().perform_destroy(instance)
 
 

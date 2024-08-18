@@ -1,6 +1,14 @@
 // product.js
-
-
+export function getToken() {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'authToken') {
+            return value;
+        }
+    }
+    return null;  // Return null if no token is found
+}
 // Populate product table
 function populateProductTable(products) {
     const productTable = document.getElementById('productTable');
@@ -56,9 +64,10 @@ function attachEventListeners() {
 // Edit product
 export async function editProduct(productId) {
     try {
+        const token = getToken(); 
         const response = await fetch(`/api/products/${productId}/`, {
             headers: {
-                'Authorization': `Token ${getToken()}`
+                'Authorization': `Token ${token}`
             }
         });
         
@@ -79,16 +88,7 @@ export async function editProduct(productId) {
     }
 }
 
-function getToken() {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        const [name, value] = cookie.trim().split('=');
-        if (name === 'authToken') {
-            return value;
-        }
-    }
-    return null;  // Return null if no token is found
-}
+
 
 // Fetch and display products
 export async function fetchProducts() {
@@ -111,6 +111,16 @@ export async function fetchProducts() {
 
 // Update product
 export async function updateProduct(productId) {
+    function getToken() {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'authToken') {
+                return value;
+            }
+        }
+        return null;  // Return null if no token is found
+    }
     const title = document.getElementById('title').value;
     const content = document.getElementById('content').value;
     const price = document.getElementById('price').value;
@@ -156,6 +166,8 @@ export async function deleteProduct(productId) {
                     'Authorization': `Token ${token}`,  // Pass token in Authorization header
                 },
             });
+            console.log(response.headers);
+            console.log(token);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -169,7 +181,7 @@ export async function deleteProduct(productId) {
     }
 }
 // Reset the form after update
-function resetForm() {
+export function resetForm() {
     document.getElementById('addProductForm').reset();
     document.getElementById('productId').value = '';  // Clear hidden product ID field
     document.getElementById('submitBtn').innerText = 'Add Product';  // Reset button text
