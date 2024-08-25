@@ -2,9 +2,8 @@ from rest_framework import authentication, generics, permissions
 from .models import Product
 from .seralizers import ProductSerializer
 from .models import Product
-from .permissions import IsStaffOrAdmin, IsAdminUser
+from .permissions import isStaffEditorPermisson
 from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
 
 
 class ProductListCreateAPIView(
@@ -12,7 +11,7 @@ class ProductListCreateAPIView(
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [IsStaffOrAdmin]
+    permission_classes = [isStaffEditorPermisson]
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
@@ -40,7 +39,7 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
     serializer_class = ProductSerializer
     lookup_field = 'pk'
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [IsStaffOrAdmin]
+    permission_classes = [isStaffEditorPermisson]
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -65,7 +64,7 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
     serializer_class = ProductSerializer
     lookup_field = 'pk'
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [IsAdminUser]
+    permission_classes = [isStaffEditorPermisson]
 
     def perform_destroy(self, instance):
         # You can access the user and print permissions here

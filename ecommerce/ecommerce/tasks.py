@@ -4,7 +4,6 @@ from rest_framework.authtoken.models import Token
 import logging
 from datetime import timedelta
 from django.core.mail import send_mail
-
 logger = logging.getLogger(__name__)
 
 

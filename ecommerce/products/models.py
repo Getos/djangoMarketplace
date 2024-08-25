@@ -18,12 +18,3 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.title} (Quantity: {self.quantity})"
-
-
-# def emailConfig(sender, instance, created, *args, **kwargs):
-#     if instance.title == "emailCongir":
-#         print("welcome sir")
-#         Order_confirmation_email.send(sender=sender, instance=instance)
-
-
-# post_save.connect(emailConfig, sender=Product)

@@ -3,14 +3,14 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from products.models import Product
 import json
-from users.models import Cart, CartItem
+from users.models import Cart, CartItem, Orders
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from users.models import CartItem
 from django.db import transaction
-from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render
+from ecommerce.utils.decorators import group_required
 
 
 def homepage(request):
@@ -68,15 +68,12 @@ def add_to_cart(request):
 # Retrieve the product using the product_id
     try:
         product = Product.objects.get(id=product_id)
-        print(f"product queryset {product}")
         available_quantity = product.quantity
-        print(f"Cart Quantity: {quantity}, Available Quantity: {
-              available_quantity}")
 
         # Compare the cart quantity with the available quantity
         if quantity > available_quantity:
-            messages.success(request, f"quantity value {
-                             quantity} is higher than avilable")
+            messages.success(
+                request, "quantity value quality is higher than avilable")
             return JsonResponse({"error": "quantity is not available"}, status=401)
         else:
             # Proceed with adding to cart
@@ -94,7 +91,6 @@ def add_to_cart(request):
 
         cartitem.quantity += quantity
         cartitem.save()
-
         num_of_items = cart.cartitems.count()  # Get updated cart item count
 
         return JsonResponse({"num_of_items": num_of_items}, status=200)
@@ -113,8 +109,8 @@ def confirm_payment(request, pk):
             insufficient_stock_items.append(cartitem.product.title)
 
     if insufficient_stock_items:
-        messages.error(request, f"Cannot proceed with payment. The following items exceed available stock: {
-                       ', '.join(insufficient_stock_items)}")
+        messages.error(request, "Cannot proceed with payment. The following items exceed available stock: " + {
+                       ', '.join(insufficient_stock_items)})
         return redirect("cart")
 
     if not cartitems:
@@ -131,7 +127,10 @@ def confirm_payment(request, pk):
         cartitem.product.quantity = new_quantity
         cartitem.product.save()
 
+    order = Orders(cart=cart)
+    order.save()
     cart.save()
+
     messages.success(
         request, f"Payment made successfully. Cart reference number: {pk}")
     return redirect("home")
@@ -149,16 +148,15 @@ def delete_cart_item(request, pk):
 # Test function to check if the user is staff or admin
 
 
-def staff_or_admin_check(user):
-    return user.is_authenticated and (user.is_staff or user.is_superuser)
-
-# Use the decorator to restrict access to staff or admin users
-
-
-@user_passes_test(staff_or_admin_check, login_url='/login/')
+# Specify the required groups here
+@group_required('sales', 'warehouse')
 def product_portal(request):
     products = Product.objects.all()
     context = {
         'products': products
     }
     return render(request, 'product_portal.html', context)
+
+
+def forbidden(request):
+    return render(request, '403.html', status=403)

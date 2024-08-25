@@ -52,7 +52,7 @@
                             </ul>
                         </li>
                         {% endif %}
-                        {% if user.is_authenticated and user.is_staff %}
+                        {% if user.is_authenticated %}
 
                         <li class="nav-item">
                             <form method="post" action="{% url 'product-portal' %}" class="d-inline">

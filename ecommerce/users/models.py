@@ -36,3 +36,9 @@ class CartItem(models.Model):
     def itemTotal(self):
         totalItem = self.product.price*self.quantity
         return totalItem
+
+
+class Orders(models.Model):
+    cart = models.ForeignKey(
+        Cart, on_delete=models.CASCADE, related_name="ordercart")
+    delivered = models.BooleanField(default=False)

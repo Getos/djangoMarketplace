@@ -3,14 +3,12 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.auth import tokens
 from rest_framework.authtoken.models import Token
-from django.core.mail import send_mail
-from django.conf import settings
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .forms import CustomUserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView as BaseLoginView
-from ecommerce.tasks import send_welcome_email
+from users.signals import send_email
 
 
 class RegisterView(CreateView):
@@ -23,7 +21,8 @@ class RegisterView(CreateView):
         # Send welcome email after user registration
         user_email = form.cleaned_data.get('email')
         print(f"this is the user email {user_email}")
-        send_welcome_email.delay(user_email)
+        send_email.send(sender=user_email)
+        print("signal sent")
         return response
 
 
