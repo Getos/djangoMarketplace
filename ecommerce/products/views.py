@@ -11,7 +11,7 @@ class ProductListCreateAPIView(
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [isStaffEditorPermisson]
+    permission_classes = [isStaffEditorPermisson,]
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
